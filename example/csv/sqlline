@@ -33,7 +33,7 @@ if [ ! -f target/classpath.txt ]; then
 fi
 
 CP="target/classes:target/test-classes:$(cat target/classpath.txt)"
-VM_OPTS=
+VM_OPTS='-Xdebug -Xnoagent -Xrunjdwp:transport=dt_socket,address=8000,server=y,suspend=n'
 if [ "$cygwin" ]; then
   CP=$(cygpath -wp "$CP")
 

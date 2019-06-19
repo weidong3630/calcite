@@ -630,7 +630,9 @@ public class SqlValidatorImpl implements SqlValidatorWithHints {
     return false;
   }
 
-  public SqlNode validate(SqlNode topNode) {
+  public SqlNode
+
+  validate(SqlNode topNode) {
     SqlValidatorScope scope = new EmptyScope(this);
     scope = new CatalogScope(scope, ImmutableList.of("CATALOG"));
     final SqlNode topNode2 = validateScopedExpression(topNode, scope);

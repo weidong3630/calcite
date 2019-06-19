@@ -1,0 +1,17 @@
+{
+  version: '1.0',
+  defaultSchema: 'churn',
+  schemas: [
+    {
+      name: 'churn',
+      type: 'custom',
+      factory: 'org.apache.calcite.adapter.jdbc.JdbcSchema$Factory',
+      operand: {
+        jdbcDriver: 'com.mysql.cj.jdbc.Driver',
+        jdbcUrl: 'jdbc:mysql://localhost/churn',
+        jdbcUser: 'mysql',
+        jdbcPassword: '123456'
+      }
+    }
+  ]
+}

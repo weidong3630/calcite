@@ -44,7 +44,7 @@ public class RelBuilderExample {
     // to the SCOTT database, with tables EMP and DEPT.
     final FrameworkConfig config = RelBuilderTest.config().build();
     final RelBuilder builder = RelBuilder.create(config);
-    for (int i = 0; i < 4; i++) {
+    for (int i = 0; i < 5; i++) {
       doExample(builder, i);
       final RelNode node = builder.build();
       if (verbose) {

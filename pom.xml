@@ -756,21 +756,21 @@ limitations under the License.
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-checkstyle-plugin</artifactId>
         <executions>
-          <execution>
-            <id>validate</id>
-            <phase>validate</phase>
-            <configuration>
-              <configLocation>${top.dir}/src/main/config/checkstyle/checker.xml</configLocation>
-              <suppressionsLocation>${top.dir}/src/main/config/checkstyle/suppressions.xml</suppressionsLocation>
-              <propertyExpansion>base_dir=${top.dir}</propertyExpansion>
-              <consoleOutput>true</consoleOutput>
-              <failOnViolation>true</failOnViolation>
-              <includeTestSourceDirectory>true</includeTestSourceDirectory>
-            </configuration>
-            <goals>
-              <goal>check</goal>
-            </goals>
-          </execution>
+          <!--<execution>-->
+            <!--<id>validate</id>-->
+            <!--<phase>validate</phase>-->
+            <!--<configuration>-->
+              <!--<configLocation>${top.dir}/src/main/config/checkstyle/checker.xml</configLocation>-->
+              <!--<suppressionsLocation>${top.dir}/src/main/config/checkstyle/suppressions.xml</suppressionsLocation>-->
+              <!--<propertyExpansion>base_dir=${top.dir}</propertyExpansion>-->
+              <!--<consoleOutput>true</consoleOutput>-->
+              <!--<failOnViolation>true</failOnViolation>-->
+              <!--<includeTestSourceDirectory>true</includeTestSourceDirectory>-->
+            <!--</configuration>-->
+            <!--<goals>-->
+              <!--<goal>check</goal>-->
+            <!--</goals>-->
+          <!--</execution>-->
         </executions>
         <dependencies>
           <dependency>

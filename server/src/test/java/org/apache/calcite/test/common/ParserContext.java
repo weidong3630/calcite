@@ -50,6 +50,8 @@ public class ParserContext {
     private        CalcitePrepare.Context context;
     private        RelOptPlanner          planner;
     private        SqlToRelConverter      sqlToRelConverter;
+    private        SqlValidator           sqlValidator;
+    private        CalciteCatalogReader   catalogReader;
 
 
     static {
@@ -71,6 +73,9 @@ public class ParserContext {
         prepare = (CalcitePrepareImpl)prepareFactory.apply();
         context = createContext();
         planner = (RelOptPlanner)getMethod("createPlanner", CalcitePrepare.Context.class).invoke(prepare, context);
+
+        catalogReader = getCatalogReader();
+        sqlValidator = (SqlValidator)getMethod("createSqlValidator", CalcitePrepare.Context.class, CalciteCatalogReader.class).invoke(prepare, context, catalogReader);
         sqlToRelConverter = createSqlToRelConverter();
     }
 
@@ -168,9 +173,6 @@ public class ParserContext {
                         .withTrimUnusedFields(true)
                         .withExpand(false)
                         .withExplain(false);
-
-        CalciteCatalogReader catalogReader = getCatalogReader();
-        SqlValidator sqlValidator = (SqlValidator)getMethod("createSqlValidator", CalcitePrepare.Context.class, CalciteCatalogReader.class).invoke(prepare, context, catalogReader);
         final RelOptCluster cluster = RelOptCluster.create(planner, new RexBuilder(context.getTypeFactory()));
         return new SqlToRelConverter(null, sqlValidator, catalogReader, cluster,
                 StandardConvertletTable.INSTANCE, builder.build());
@@ -225,5 +227,17 @@ public class ParserContext {
 
     public SqlToRelConverter getSqlToRelConverter() {
         return sqlToRelConverter;
+    }
+
+    public SqlValidator getSqlValidator() {
+        return sqlValidator;
+    }
+
+    public Connection getConnection() {
+        return connection;
+    }
+
+    public AvaticaStatement getStatement() {
+        return statement;
     }
 }

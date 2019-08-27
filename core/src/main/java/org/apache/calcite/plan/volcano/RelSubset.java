@@ -16,7 +16,6 @@
  */
 package org.apache.calcite.plan.volcano;
 
-import org.apache.calcite.adapter.enumerable.EnumerableTableScan;
 import org.apache.calcite.linq4j.Linq4j;
 import org.apache.calcite.plan.RelOptCluster;
 import org.apache.calcite.plan.RelOptCost;
@@ -138,16 +137,6 @@ public class RelSubset extends AbstractRelNode {
       final RelOptCost cost = planner.getCost(rel, mq);
       if (cost.isLt(bestCost)) {
         bestCost = cost;
-
-        //test condition
-        boolean condition = System.getProperty("calcite_debug") != null && System.getProperty("calcite_debug").equals("true");
-        if (condition && rel instanceof EnumerableTableScan) {
-          String table = ((EnumerableTableScan)rel).getTable().getQualifiedName().get(0);
-          if (table.equals("MV")) {
-            assert 1 > 0;
-          }
-        }
-
         best = rel;
       }
     }
@@ -360,16 +349,6 @@ public class RelSubset extends AbstractRelNode {
         LOGGER.trace("Subset cost improved: subset [{}] cost was {} now {}", this, bestCost, cost);
 
         bestCost = cost;
-
-        //test condition
-        boolean condition = System.getProperty("calcite_debug") != null && System.getProperty("calcite_debug").equals("true");
-        if (condition && rel instanceof EnumerableTableScan) {
-          String table = ((EnumerableTableScan)rel).getTable().getQualifiedName().get(0);
-          if (table.equals("MV")) {
-            assert 1 > 0;
-          }
-        }
-
         best = rel;
 
         // Lower cost means lower importance. Other nodes will change

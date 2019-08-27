@@ -16,8 +16,6 @@
  */
 package org.apache.calcite.plan.volcano;
 
-import org.apache.calcite.adapter.enumerable.EnumerableFilter;
-import org.apache.calcite.adapter.enumerable.EnumerableTableScan;
 import org.apache.calcite.avatica.util.Spaces;
 import org.apache.calcite.config.CalciteConnectionConfig;
 import org.apache.calcite.config.CalciteSystemProperty;
@@ -1654,23 +1652,8 @@ public class VolcanoPlanner extends AbstractRelOptPlanner {
           + " != " + traitDefs.size());
     }
 
-    if (rel instanceof EnumerableFilter) {
-      RelNode input = ((EnumerableFilter)rel).getInput();
-    }
-
     // Ensure that its sub-expressions are registered.
     rel = rel.onRegister(this);
-
-    //test
-    if (rel instanceof EnumerableFilter) {
-      RelNode input = ((EnumerableFilter)rel).getInput();
-      if (input instanceof EnumerableTableScan) {
-        String table = ((EnumerableTableScan)input).getTable().getQualifiedName().get(0);
-        if (table.equals("MV")) {
-          assert true;
-        }
-      }
-    }
 
     // Record its provenance. (Rule call may be null.)
     if (ruleCallStack.isEmpty()) {

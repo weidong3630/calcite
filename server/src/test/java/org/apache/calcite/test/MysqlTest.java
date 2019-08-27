@@ -1,33 +1,17 @@
-package org.apache.calcite.test.mysql;
+package org.apache.calcite.test;
 
-
-import com.google.common.collect.Lists;
-import org.apache.calcite.util.Bug;
 import org.apache.calcite.util.Pair;
 import org.apache.calcite.util.Util;
-
 import org.hamcrest.Matcher;
-import org.hamcrest.MatcherAssert;
-import org.hsqldb.jdbc.JDBCDatabaseMetaData;
-import org.hsqldb.jdbc.JDBCResultSet;
-import org.jline.reader.History;
-import org.jline.reader.LineReader;
-import org.jline.reader.impl.history.DefaultHistory;
-import org.jline.terminal.Terminal;
-import org.junit.Assert;
-import org.junit.Test;
-
-import java.io.*;
-import java.nio.charset.StandardCharsets;
-import java.sql.SQLException;
-import java.util.*;
-
 import sqlline.BuiltInProperty;
-import sqlline.DispatchCallback;
 import sqlline.SqlLine;
-import sqlline.SqlLineOpts;
 
-import static org.hamcrest.CoreMatchers.containsString;
+import java.io.File;
+import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -39,7 +23,7 @@ public class MysqlTest {
     /**
      * Execute a script with "sqlline -f".
      *
-     * @throws java.lang.Throwable On error
+     * @throws Throwable On error
      * @return The stderr and stdout from running the script
      * @param args Script arguments
      */

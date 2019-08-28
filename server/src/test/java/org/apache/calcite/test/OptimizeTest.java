@@ -195,26 +195,28 @@ public class OptimizeTest {
 
   @Test
   public void testSelectAll() throws Exception {
-    Statement s = parserContext.getStatement();
-    s.execute("create table if not exists t (i int not null)");
+    try (Statement s = parserContext.getStatement()) {
+      s.execute("create table if not exists t (i int not null)");
 
-    String sql = "select * from t";
-    SqlNode sqlNode = parserContext.parseStmt(sql);
-    RelNode relNode = parserContext.getSqlToRelConverter().convertQuery(sqlNode, true, true).rel;
-    SqlNode sqlNodeNew = toSqlNode(relNode);
-    parserContext.getSqlValidator().validate(sqlNodeNew);
+      String sql = "select * from t";
+      SqlNode sqlNode = parserContext.parseStmt(sql);
+      RelNode relNode = parserContext.getSqlToRelConverter().convertQuery(sqlNode, true, true).rel;
+      SqlNode sqlNodeNew = toSqlNode(relNode);
+      parserContext.getSqlValidator().validate(sqlNodeNew);
+    }
   }
 
   @Test
   public void testSelectCountAll() throws Exception {
-    Statement s = parserContext.getStatement();
-    s.execute("create table if not exists t (i int not null)");
+    try (Statement s = parserContext.getStatement()) {
+      s.execute("create table if not exists t (i int not null)");
 
-    String sql = "select count(*) from t";
-    SqlNode sqlNode = parserContext.parseStmt(sql);
-    RelNode relNode = parserContext.getSqlToRelConverter().convertQuery(sqlNode, true, true).rel;
-    SqlNode sqlNodeNew = toSqlNode(relNode);
-    parserContext.getSqlValidator().validate(sqlNodeNew);
+      String sql = "select count(*) from t";
+      SqlNode sqlNode = parserContext.parseStmt(sql);
+      RelNode relNode = parserContext.getSqlToRelConverter().convertQuery(sqlNode, true, true).rel;
+      SqlNode sqlNodeNew = toSqlNode(relNode);
+      parserContext.getSqlValidator().validate(sqlNodeNew);
+    }
   }
 
 

@@ -429,7 +429,10 @@ public abstract class SqlImplementor {
     if (requiresAlias(node)) {
       node = as(node, "t");
     }
-    return new SqlSelect(POS, SqlNodeList.EMPTY, null, node, null, null, null,
+
+    // set select list as star identifier
+    SqlNodeList selectList = new SqlNodeList(Expressions.list(SqlIdentifier.star(POS)), POS);
+    return new SqlSelect(POS, SqlNodeList.EMPTY, selectList, node, null, null, null,
         SqlNodeList.EMPTY, null, null, null);
   }
 
@@ -1121,7 +1124,11 @@ public abstract class SqlImplementor {
       clauseList.appendAll(clauses);
       Context newContext;
       final SqlNodeList selectList = select.getSelectList();
-      if (selectList != null) {
+      if (selectList != null
+              && !(1 == selectList.size()
+              && SqlKind.IDENTIFIER == selectList.get(0).getKind()
+              && ((SqlIdentifier) selectList.get(0)).isStar())
+              ) {
         newContext = new Context(dialect, selectList.size()) {
           public SqlNode field(int ordinal) {
             final SqlNode selectItem = selectList.get(ordinal);

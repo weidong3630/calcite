@@ -33,14 +33,9 @@ import org.apache.calcite.rel.type.RelDataTypeSystemImpl;
 import org.apache.calcite.rex.RexNode;
 import org.apache.calcite.runtime.FlatLists;
 import org.apache.calcite.schema.SchemaPlus;
-import org.apache.calcite.sql.SqlCall;
-import org.apache.calcite.sql.SqlDialect;
+import org.apache.calcite.sql.*;
 import org.apache.calcite.sql.SqlDialect.Context;
 import org.apache.calcite.sql.SqlDialect.DatabaseProduct;
-import org.apache.calcite.sql.SqlIdentifier;
-import org.apache.calcite.sql.SqlNode;
-import org.apache.calcite.sql.SqlSelect;
-import org.apache.calcite.sql.SqlWriter;
 import org.apache.calcite.sql.dialect.CalciteSqlDialect;
 import org.apache.calcite.sql.dialect.HiveSqlDialect;
 import org.apache.calcite.sql.dialect.JethroDataSqlDialect;
@@ -51,6 +46,7 @@ import org.apache.calcite.sql.fun.SqlStdOperatorTable;
 import org.apache.calcite.sql.parser.SqlParser;
 import org.apache.calcite.sql.type.SqlTypeFactoryImpl;
 import org.apache.calcite.sql.type.SqlTypeName;
+import org.apache.calcite.sql.util.SqlBasicVisitor;
 import org.apache.calcite.sql2rel.SqlToRelConverter;
 import org.apache.calcite.test.CalciteAssert;
 import org.apache.calcite.test.RelBuilderTest;
@@ -80,10 +76,7 @@ import static org.apache.calcite.test.Matchers.isLinux;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 /**
  * Tests for {@link RelToSqlConverter}.
@@ -3880,7 +3873,7 @@ public class RelToSqlConverterTest {
     });
   }
 
-  @Test public void testSelectCountStar() throws Exception {
+  @Test public void testSelectCountStar() {
     final String query = "select count(*) from \"product\"";
     final String expected = "SELECT COUNT(*)\n"
             + "FROM \"foodmart\".\"product\"";
@@ -3892,6 +3885,44 @@ public class RelToSqlConverterTest {
     SqlCall sqlCall = (SqlCall) select.getSelectList().get(0);
     assertEquals(1, sqlCall.operandCount());
     assertTrue(((SqlIdentifier) sqlCall.operand(0)).isStar());
+  }
+
+  @Test public void testSelectStar1() {
+    final String query = "select * from \"product\"";
+    final String expected = "SELECT *\n"
+            + "FROM \"foodmart\".\"product\"";
+    Sql sql = sql(query);
+    sql.ok(expected);
+
+    // arguments of "count(*)" must be star identifier
+    SqlSelect select = (SqlSelect) sql.exec0();
+    assertEquals(1, select.getSelectList().size());
+    assertTrue(((SqlIdentifier) select.getSelectList().get(0)).isStar());
+  }
+
+  @Test public void testSelectStar2() {
+    final String query = "select \"t\".\"product_id\" from (select * from \"product\" where  \"product_class_id\" > 100) as \"t\" "
+            + "left join \"product\" on 1 > 0 "
+            + " group by \"t\".\"product_id\"";
+    final String expected = "SELECT \"t\".\"product_id\"\n"
+            + "FROM (SELECT *\n"
+            + "FROM \"foodmart\".\"product\"\n"
+            + "WHERE \"product_class_id\" > 100) AS \"t\"\n"
+            + "LEFT JOIN \"foodmart\".\"product\" AS \"product0\" ON 1 > 0\n"
+            + "GROUP BY \"t\".\"product_id\"";
+    Sql sql = sql(query);
+    sql.ok(expected);
+
+    // arguments of "count(*)" must be star identifier
+    sql.exec0().accept(new SqlBasicVisitor<Void>() {
+      @Override
+      public Void visit(SqlCall call) {
+        if (SqlKind.SELECT == call.getKind()) {
+          assertNotNull(((SqlSelect) call).getSelectList());
+        }
+        return super.visit(call);
+      }
+    });
   }
 
   /** Fluid interface to run tests. */

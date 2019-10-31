@@ -11,6 +11,9 @@ import org.apache.calcite.jdbc.CalcitePrepare;
 import org.apache.calcite.jdbc.CalciteSchema;
 import org.apache.calcite.linq4j.function.Function0;
 import org.apache.calcite.plan.*;
+import org.apache.calcite.plan.hep.HepPlanner;
+import org.apache.calcite.plan.hep.HepProgram;
+import org.apache.calcite.plan.hep.HepProgramBuilder;
 import org.apache.calcite.prepare.CalciteCatalogReader;
 import org.apache.calcite.prepare.CalcitePrepareImpl;
 import org.apache.calcite.prepare.Prepare;
@@ -211,6 +214,17 @@ public class ParserContext {
         }
 
         return materializationList;
+    }
+
+    public RelNode optimize(RelNode relNode, RelOptRule rule) {
+        HepProgramBuilder program = HepProgram.builder();
+        program.addGroupBegin();
+        program.addRuleInstance(rule);
+        program.addGroupEnd();
+
+        HepPlanner planner = new HepPlanner(program.build());
+        planner.setRoot(relNode);
+        return planner.findBestExp();
     }
 
     public CalcitePrepareImpl getPrepare() {

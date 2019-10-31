@@ -24,6 +24,7 @@ import org.apache.calcite.rel.RelRoot;
 import org.apache.calcite.rel.core.JoinRelType;
 import org.apache.calcite.rel.logical.LogicalJoin;
 import org.apache.calcite.rel.rel2sql.RelToSqlConverter;
+import org.apache.calcite.rel.rules.ProjectMergeRule;
 import org.apache.calcite.schema.SchemaPlus;
 import org.apache.calcite.sql.SqlDialect;
 import org.apache.calcite.sql.SqlNode;
@@ -215,6 +216,21 @@ public class OptimizeTest {
       SqlNode sqlNode = parserContext.parseStmt(sql);
       RelNode relNode = parserContext.getSqlToRelConverter().convertQuery(sqlNode, true, true).rel;
       SqlNode sqlNodeNew = toSqlNode(relNode);
+      parserContext.getSqlValidator().validate(sqlNodeNew);
+    }
+  }
+
+  @Test
+  public void testProjectMerge() throws Exception {
+    try (Statement s = parserContext.getStatement()) {
+      s.execute("create table if not exists t_testProjectMerge (a int not null, b int not null, c int not null, d int not null)");
+
+      String sql = "select a, avg(c1) from (select a,sum(d),b as c1 from t_testProjectMerge group by b,a) as t group by a";
+      SqlNode sqlNode = parserContext.parseStmt(sql);
+      RelNode relNode = parserContext.getSqlToRelConverter().convertQuery(sqlNode, true, true).rel;
+
+      RelNode relNodeNew = parserContext.optimize(relNode, ProjectMergeRule.INSTANCE);
+      SqlNode sqlNodeNew = toSqlNode(relNodeNew);
       parserContext.getSqlValidator().validate(sqlNodeNew);
     }
   }

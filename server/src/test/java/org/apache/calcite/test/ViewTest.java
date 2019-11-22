@@ -90,13 +90,13 @@ public class ViewTest {
   public void testMaterializedView() throws Exception {
     try (Connection c = connect();
          Statement s = c.createStatement()) {
-      s.execute("create table t (i int not null)");
-      //s.executeUpdate("insert into t values 1");
-      //s.executeUpdate("insert into t values 3");
-      //s.executeUpdate("insert into t values 5");
+      s.execute("create table t (i int not null, j varchar)");
+//      s.executeUpdate("insert into t values 1");
+//      s.executeUpdate("insert into t values 3");
+      s.executeUpdate("insert into t values (5, 'bcd')");
       //boolean b = s.execute("create table mv (c1 int)");
       //boolean b =
-      s.executeUpdate("create materialized view mv as select * from t");
+      s.executeUpdate("create materialized view mv(a, b) as select i,'abc' from t");
       //assertThat(b, is(false));
       //try (ResultSet r = s.executeQuery("select sum(i) from mv")) {
       //  assertThat(r.next(), is(true));
@@ -105,10 +105,10 @@ public class ViewTest {
       //}
 
       System.setProperty("calcite_debug", "true");
-      try (ResultSet r = s.executeQuery("select * from (select i from t) as t1 where i > 3")) {
-        //assertThat(r.next(), is(true));
-        //assertThat(r.getInt(1), is(5));
-        //assertThat(r.next(), is(false));
+      try (ResultSet r = s.executeQuery("explain plan for select * from (select i,'abc' from t) as t1 where i > 3")) {
+        assertThat(r.next(), is(true));
+        assertThat(r.getInt(1), is(5));
+        assertThat(r.next(), is(false));
       }
       System.setProperty("calcite_debug", "false");
     }

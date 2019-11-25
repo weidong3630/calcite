@@ -16,6 +16,7 @@
  */
 package org.apache.calcite.plan.volcano;
 
+import org.apache.calcite.adapter.enumerable.EnumerableFilter;
 import org.apache.calcite.plan.RelOptRuleOperand;
 import org.apache.calcite.plan.RelOptUtil;
 import org.apache.calcite.plan.RelTrait;
@@ -51,6 +52,11 @@ class VolcanoRuleMatch extends VolcanoRuleCall {
   VolcanoRuleMatch(VolcanoPlanner volcanoPlanner, RelOptRuleOperand operand0,
       RelNode[] rels, Map<RelNode, List<RelNode>> nodeInputs) {
     super(volcanoPlanner, operand0, rels.clone(), nodeInputs);
+
+    if (rels[0] instanceof EnumerableFilter) {
+      assert 1 > 0;
+    }
+
     assert allNotNull(rels, Litmus.THROW);
 
     // Try to deduce which subset the result will belong to. Assume --

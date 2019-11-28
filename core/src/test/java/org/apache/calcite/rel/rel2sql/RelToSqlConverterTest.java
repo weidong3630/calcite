@@ -388,6 +388,16 @@ public class RelToSqlConverterTest {
         .ok(expectedMySql);
   }
 
+  @Test public void testSelectQueryWithCountSingleColumn() {
+    final String query = "select \"product_id\", count(\"product_id\")\n" +
+        "from \"product\"\n" +
+        "group by \"product_id\"";
+    final String expected = "SELECT \"product_id\", COUNT(\"product_id\")\n" +
+        "FROM \"foodmart\".\"product\"\n" +
+        "GROUP BY \"product_id\"";
+    sql(query).ok(expected);
+  }
+
   /** As {@link #testSelectQueryWithSingletonCube()}, but with LIMIT. */
   @Test public void testSelectQueryWithCubeLimit() {
     final String query = "select \"product_class_id\", count(*) as c\n"
